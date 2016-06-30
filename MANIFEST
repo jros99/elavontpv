@@ -5,6 +5,7 @@ elavonvtpv/CreditCard.py
 elavonvtpv/Request.py
 elavonvtpv/Response.py
 elavonvtpv/TssInfo.py
+elavonvtpv/__init__.py
 elavonvtpv/credentials.py
 elavonvtpv/enum.py
 elavonvtpv/tests.py
