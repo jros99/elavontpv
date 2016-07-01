@@ -8,7 +8,6 @@ class Response:
         Defines a Response object
         :param xml: a string containing xml data
         """
-        print(xml)
         self.__xml = Etree.fromstring(xml)
 
     def __getattr__(self, item):
