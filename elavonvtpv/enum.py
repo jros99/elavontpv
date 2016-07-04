@@ -14,6 +14,9 @@ class RequestType(Enum):
 
 class Currency(Enum):
     euro = 'EUR'
+    us_dollar = 'USD'
+    br_real = 'BRL'
+    mx_peso = 'MXN'
 
 
 class Channel(Enum):
