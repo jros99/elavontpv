@@ -8,15 +8,17 @@ class Response:
         Defines a Response object
         :param xml: a string containing xml data
         """
-        self.__xml = Etree.fromstring(xml)
+        self._xml = Etree.fromstring(xml)
 
     def __getattr__(self, item):
         """
-        Search unidentified attributes inside the ElementTree structure inside the __xml attribute.
+        Search unidentified attributes inside the ElementTree structure inside the _xml attribute.
         :param item: the name of the requested attribute
         :return: the content of the first tag named item in the ElementTree structure
         """
-        return self.__xml.find(item).text
+        if item == '_xml':
+            return self._xml
+        return self._xml.find(item).text
 
     def __hash(self):
         """
