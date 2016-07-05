@@ -1,3 +1,4 @@
+from xml.dom import minidom
 from xml.etree import ElementTree as Etree
 import hashlib
 
@@ -19,6 +20,13 @@ class Response:
         if item == '_xml':
             return self._xml
         return self._xml.find(item).text
+
+    def to_xml_string(self):
+        binary = Etree.tostring(self._xml, encoding='utf8', method='xml')
+        return binary.decode('utf-8')
+
+    def to_pretty_xml(self):
+        return minidom.parseString(self.to_xml_string()).toprettyxml()
 
     def __hash(self):
         """
