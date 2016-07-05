@@ -11,14 +11,12 @@ class Response:
         """
         self._xml = Etree.fromstring(xml)
 
-    def __getattr__(self, item):
+    def find(self, item):
         """
         Search unidentified attributes inside the ElementTree structure inside the _xml attribute.
         :param item: the name of the requested attribute
         :return: the content of the first tag named item in the ElementTree structure
         """
-        if item == '_xml':
-            return self._xml
         return self._xml.find(item).text
 
     def to_xml_string(self):
