@@ -71,6 +71,6 @@ class Response:
         :return: a boolean value indicating the validity of the response hash
         """
         try:
-            return self.sha1hash is self.__sha1_hash(secret)
+            return self.sha1hash == self.__sha1_hash(secret)
         except AttributeError:
             return False
