@@ -20,7 +20,18 @@ class Response:
         :param item: the name of the requested attribute
         :return: the content of the first tag named item in the ElementTree structure
         """
-        return self._xml.find(item).text
+        try:
+            return self._xml.find(item).text
+        except AttributeError:
+            raise AttributeError(item+' not found in response.')
+
+    @property
+    def timestamp(self):
+        """
+        Gets the timestamp of the response, located in an attribute of the root element.
+        :return: a string representing a timestamp.
+        """
+        return self._xml.attrib.get('timestamp', '')
 
     def list_xml_tags(self):
         """
@@ -44,25 +55,25 @@ class Response:
         """
         return minidom.parseString(self.to_xml_string()).toprettyxml()
 
-    def __hash(self):
+    def _hash(self):
         """
         Builds the response hash from the data contained within
         :return: the hash string that will latter be cyphered
         """
-        res = "%s.%s.%s.%s.%s.%s.%s" % (str(self.timestamp), str(self.merchant_id), str(self.order_id), str(self.result)
-                                        , str(self.message), str(self.pas_ref), str(self.auth_code))
+        res = "%s.%s.%s.%s.%s.%s.%s" % (str(self.timestamp), str(self.merchantid), str(self.orderid), str(self.result)
+                                        , str(self.message), str(self.pasref), str(self.authcode))
         return res.encode('utf-8')
 
-    def __sha1_hash(self, secret):
+    def _sha1_hash(self, secret):
         """
         returns a secure hash in SHA-1 for this response
         :param secret: the shared secret between Elavon and your account
         :return: secure hash in SHA-1
         """
-        sha1_hash = hashlib.sha1(self.__hash()).hexdigest()
+        sha1_hash = hashlib.sha1(self._hash()).hexdigest()
         sha1_hash += ".%s" % secret
 
-        return hashlib.sha1(sha1_hash.encode('utf-8')).digest()
+        return hashlib.sha1(sha1_hash.encode('utf-8')).hexdigest()
 
     def validate_origin(self, secret):
         """
@@ -71,6 +82,6 @@ class Response:
         :return: a boolean value indicating the validity of the response hash
         """
         try:
-            return self.sha1hash == self.__sha1_hash(secret)
+            return self.sha1hash == self._sha1_hash(secret)
         except AttributeError:
             return False
