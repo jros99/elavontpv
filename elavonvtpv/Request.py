@@ -119,7 +119,7 @@ class Request:
     def __authorization_code_to_etree_element(self):
 
         authorization_code = Etree.Element('authcode')
-        authorization_code.text = self.past_reference
+        authorization_code.text = self.authorization_code
 
         return authorization_code
 
@@ -149,6 +149,13 @@ class Request:
             comment2.text = self.comment2
 
         return comments
+
+    def __refund_hash_to_etree_element(self):
+
+        refundhash = Etree.Element('refundhash')
+        refundhash.text = hashlib.sha1(self.refund_hash.encode('utf-8')).hexdigest()
+
+        return refundhash
 
     def __sh1_hash_to_etree_element(self):
 
@@ -223,13 +230,12 @@ class Request:
     def __rebate_to_etree(self):
         request = self.__basic_to_etree_element()
         request.append(self.__past_reference_to_etree_element())
-        request.append(self.__authorization_code_to_etree_element())
         request.append(self.__amount_to_etree_element())
         request.append(self.__auto_settle_to_etree_element())
         if self.comment1 or self.comment2:
             request.append(self.__comments_to_etree_element())
         request.append(self.__sh1_hash_to_etree_element())
-        # request.append(self.__md5_hash_to_etree_element())
+        request.append(self.__refund_hash_to_etree_element())
 
         return Etree.ElementTree(request)
 

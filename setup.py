@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name='elavonvtpv',
   packages=['elavonvtpv'],
-  version='1.4.3',
+  version='1.4.4',
   description='Python 3 package to comunicate with the Elavon Virtual TPV Remote API',
   author='Javier Ros Honduvilla',
   author_email='javier.ros.honduvilla@gmail.com',
