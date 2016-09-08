@@ -230,6 +230,7 @@ class Request:
     def __rebate_to_etree(self):
         request = self.__basic_to_etree_element()
         request.append(self.__past_reference_to_etree_element())
+        request.append(self.__authorization_code_to_etree_element())
         request.append(self.__amount_to_etree_element())
         request.append(self.__auto_settle_to_etree_element())
         if self.comment1 or self.comment2:
