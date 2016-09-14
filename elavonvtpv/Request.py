@@ -53,10 +53,10 @@ class Request:
         Builds the request hash from the data contained within
         :return: the hash string that will latter be cyphered
         """
-        res = "%s.%s.%s.%s.%s" % (str(self.timestamp), str(self.merchant_id), str(self.order_id), str(self.amount),
+        res = "%s.%s.%s.%s.%s." % (str(self.timestamp), str(self.merchant_id), str(self.order_id), str(self.amount),
                                   str(self.currency.value))
         if self.card:
-            res += ".%s" % str(self.card.number)
+            res += "%s" % str(self.card.number)
 
         return res.encode('utf-8')
 
