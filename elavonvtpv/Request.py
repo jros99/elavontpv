@@ -10,7 +10,7 @@ import requests
 class Request:
     def __init__(self, secret, request_type, merchant_id, order_id, currency=None, amount=None, card=None,
                  tss_info=None, settle=True, account=None, channel=None, comment1=None, comment2=None,
-                 past_reference=None, authorization_code=None, refund_hash=None):
+                 past_reference=None, authorization_code=None, refund_hash=None, pares=None, mpi=None):
         """
         Defines a Request object
         :param secret: the shared secret between Elavon and your account
@@ -29,6 +29,8 @@ class Request:
         :param past_reference: reference of the transaction to which this one refers
         :param authorization_code: authorization code given with the transaction to which this one refers
         :param refund_hash: hash provided by Elavon, needed to make refunds
+        :param pares: authorization code given with the transaction to which this one refers
+        :param mpi: hash provided by Elavon, needed to make refunds
         """
         self.timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
         self.secret = secret
@@ -47,6 +49,8 @@ class Request:
         self.past_reference = past_reference
         self.authorization_code = authorization_code
         self.refund_hash = refund_hash
+        self.pares = pares
+        self.mpi = mpi
 
     def __hash(self):
         """
@@ -86,9 +90,16 @@ class Request:
         creates the basic structure of an Elavon request
         :return: the basic root element of the request containing those fields that exist en every request type
         """
+        if self.request_type == RequestType.verify_enrolled:
+            request_type = '3ds-verifyenrolled'
+        elif self.request_type == RequestType.verify_sig:
+            request_type = '3ds-verifysig'
+        else:
+            request_type = self.request_type.name
+
         request = Etree.Element('request')
         request.set('timestamp', self.timestamp)
-        request.set('type', self.request_type.name)
+        request.set('type', request_type)
 
         merchant_id = Etree.SubElement(request, 'merchantid')
         merchant_id.text = self.merchant_id
@@ -115,6 +126,13 @@ class Request:
         past_reference.text = self.past_reference
 
         return past_reference
+
+    def __pares_to_etree_element(self):
+
+        pares = Etree.Element('pares')
+        pares.text = self.pares
+
+        return pares
 
     def __authorization_code_to_etree_element(self):
 
@@ -173,9 +191,12 @@ class Request:
 
     def __auth_to_etree(self):
         request = self.__basic_to_etree_element()
-        request.append(self.__channel_to_etree_element())
+        if not self.mpi:
+            request.append(self.__channel_to_etree_element())
         request.append(self.__amount_to_etree_element())
         request.append(self.card.to_etree_element())
+        if self.mpi:
+            request.append(self.mpi.to_etree_element())
         request.append(self.__auto_settle_to_etree_element())
         if self.comment1 or self.comment2:
             request.append(self.__comments_to_etree_element())
@@ -279,6 +300,25 @@ class Request:
 
         return Etree.ElementTree(request)
 
+    def __verify_enrolled_to_etree(self):
+        request = self.__basic_to_etree_element()
+        if self.amount and self.currency:
+            request.append(self.__amount_to_etree_element())
+        request.append(self.card.to_etree_element())
+        request.append(self.__sh1_hash_to_etree_element())
+
+        return Etree.ElementTree(request)
+
+    def __verify_sig_to_etree(self):
+        request = self.__basic_to_etree_element()
+        if self.amount and self.currency:
+            request.append(self.__amount_to_etree_element())
+        request.append(self.card.to_etree_element())
+        request.append(self.__pares_to_etree_element())
+        request.append(self.__sh1_hash_to_etree_element())
+
+        return Etree.ElementTree(request)
+
     def __to_etree(self):
         if self.request_type is RequestType.auth:
             return self.__auth_to_etree()
@@ -296,6 +336,10 @@ class Request:
             return self.__tss_to_etree()
         elif self.request_type is RequestType.settle:
             return self.__settle_to_etree()
+        elif self.request_type is RequestType.verify_enrolled:
+            return self.__verify_enrolled_to_etree()
+        elif self.request_type is RequestType.verify_sig:
+            return self.__verify_sig_to_etree()
 
     def to_xml_string(self):
         binary = Etree.tostring(self.__to_etree().getroot(), encoding='utf8', method='xml')

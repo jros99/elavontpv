@@ -10,6 +10,8 @@ class RequestType(Enum):
     void = 6
     TSS = 7
     settle = 8
+    verify_enrolled = 9
+    verify_sig = 10
 
 
 class Currency(Enum):
