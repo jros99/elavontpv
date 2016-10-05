@@ -2,6 +2,7 @@
 setup.cfg
 setup.py
 elavonvtpv/CreditCard.py
+elavonvtpv/Mpi.py
 elavonvtpv/Request.py
 elavonvtpv/Response.py
 elavonvtpv/TssInfo.py
