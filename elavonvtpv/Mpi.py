@@ -3,7 +3,7 @@ from xml.etree import ElementTree as ETree
 
 
 class Mpi:
-    def __init__(self, cavv, xid, eci):
+    def __init__(self, eci, cavv=None, xid=None):
         """
         Defines a Mpi object
         :param cavv: the CAVV or UCAF value necessary for the authorization request
@@ -29,8 +29,7 @@ class Mpi:
             xid = ETree.SubElement(mpi, 'xid')
             xid.text = self.xid
 
-        if self.eci:
-            eci = ETree.SubElement(mpi, 'eci')
-            eci.text = self.eci
+        eci = ETree.SubElement(mpi, 'eci')
+        eci.text = self.eci
 
         return mpi
