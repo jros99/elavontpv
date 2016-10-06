@@ -60,8 +60,20 @@ class Response:
         Builds the response hash from the data contained within
         :return: the hash string that will latter be cyphered
         """
-        res = "%s.%s.%s.%s.%s.%s.%s" % (str(self.timestamp), str(self.merchantid), str(self.orderid), str(self.result)
-                                        , str(self.message), str(self.pasref), str(self.authcode))
+        res = "%s.%s.%s.%s.%s." % (str(self.timestamp), str(self.merchantid), str(self.orderid), str(self.result)
+                                        , str(self.message))
+        try:
+            pasref = self.pasref
+        except AttributeError:
+            pasref = None
+        if pasref:
+            res += "%s." % (str(pasref))
+        try:
+            authcode = self.authcode
+        except AttributeError:
+            authcode = None
+        if authcode:
+            res += "%s" % (str(authcode))
         return res.encode('utf-8')
 
     def _sha1_hash(self, secret):
