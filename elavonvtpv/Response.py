@@ -61,11 +61,11 @@ class Response:
         :return: the hash string that will latter be cyphered
         """
         try:
-           pasref = self.pasref
+           pasref = self.pasref or ''
         except AttributeError:
            pasref = ''
         try:
-           authcode = self.authcode
+           authcode = self.authcode or ''
         except AttributeError:
            authcode = ''
         res = "%s.%s.%s.%s.%s.%s.%s" % (str(self.timestamp), str(self.merchantid), str(self.orderid), str(self.result)
